@@ -34,18 +34,20 @@ export default function Rack({ rack, gameMode, ballSet }) {
 
   return (
     <div className="rack-container">
-      {rack.map((num, i) => (
+      {rack.slice(0, positions.length).map((num, i) => (
         <div
-          key={i}
-          className="ball-position"
-          style={{
+            key={i}
+            className="ball-position"
+            style={{
             left: `calc(50% + ${positions[i].x}px - ${ballSize / 2}px)`,
             top: `calc(50% + ${positions[i].y}px - ${ballSize / 2}px - 20px)`
-          }}
+            }}
         >
-          <Ball number={num} ballData={ballSet[num]} />
+            {ballSet[num] && (
+            <Ball number={num} ballData={ballSet[num]} />
+            )}
         </div>
-      ))}
+        ))}
     </div>
   );
 }

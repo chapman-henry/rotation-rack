@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { ballSets } from "./data/ballSets";
-import { generateNineBallRack, generateTenBallRack } from "./utils/rackGenerators";
+import {
+  generateNineBallRack,
+  generateTenBallRack
+} from "./utils/rackGenerators";
 import Controls from "./components/Controls";
 import Rack from "./components/Rack";
 
 export default function App() {
   const [gameMode, setGameMode] = useState("9-ball");
   const [ballSetKey, setBallSetKey] = useState("default");
-  const [rack, setRack] = useState(generateNineBallRack());
+
+  const generateRack = (mode) =>
+    mode === "9-ball"
+      ? generateNineBallRack()
+      : generateTenBallRack();
+
+  const [rack, setRack] = useState(generateRack("9-ball"));
+
+  const handleModeChange = (mode) => {
+    setGameMode(mode);
+    setRack(generateRack(mode));  // immediately synced
+  };
 
   const handleGenerate = () => {
-    setRack(
-      gameMode === "9-ball"
-        ? generateNineBallRack()
-        : generateTenBallRack()
-    );
+    setRack(generateRack(gameMode));
   };
 
   return (
@@ -23,7 +33,7 @@ export default function App() {
 
       <Controls
         gameMode={gameMode}
-        setGameMode={setGameMode}
+        setGameMode={handleModeChange}
         ballSetKey={ballSetKey}
         setBallSetKey={setBallSetKey}
         ballSets={ballSets}
