@@ -12,6 +12,12 @@
  *   'gloss'      → standard Belgian billiard ball look
  *   'high-gloss' → tournament ball look — intense highlight & deep shadows
  */
+function octagonPoints(cx, cy, r) {
+  return Array.from({ length: 8 }, (_, i) => {
+    const angle = (Math.PI / 4) * i - Math.PI / 8;
+    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+  }).join(" ");
+}
 
 const SIZE = 56;
 const R = SIZE / 2; // 28 px
@@ -22,7 +28,7 @@ const FINISH = {
   satin:        { specPeak: 0.46, specR: "34%", rimDark: 0.30, ambient: 0.28 },
 };
 
-export default function Ball({ number, ballData, finish = "gloss", stripeWidth = 0.43 }) {
+export default function Ball({ number, ballData, finish, stripeWidth, numberRing, numberRingColor, fontFamily, fontWeight }) {
   const { color, stripe } = ballData;
 
   const fp = FINISH[finish] ?? FINISH.gloss;
@@ -92,7 +98,15 @@ export default function Ball({ number, ballData, finish = "gloss", stripeWidth =
         {/* 4. Specular highlight */}
         <circle cx={R} cy={R} r={R} fill={`url(#spec-${uid})`} />
 
-        {/* 5. Number disc — white circle at centre */}
+        {/* 5. Number ring background shape */}
+        {numberRing === "circle" && (
+          <circle cx={R} cy={R} r={R * 0.42} fill={numberRingColor} />
+        )}
+        {numberRing === "octagon" && (
+          <polygon points={octagonPoints(R, R, R * 0.42)} fill={numberRingColor} />
+        )}
+
+        {/* 6. White disc sits on top of the ring */}
         <circle cx={R} cy={R} r={R * 0.365} fill="white" opacity="0.95" />
       </g>
 
@@ -111,10 +125,9 @@ export default function Ball({ number, ballData, finish = "gloss", stripeWidth =
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={number >= 10 ? "10" : "12"}
-        fontWeight="bold"
-        fontFamily='"Arial Black", "Arial Bold", Arial, sans-serif'
+        fontWeight={fontWeight}       // was hardcoded "bold"
+        fontFamily={fontFamily}       // was hardcoded "Arial Black, ..."
         fill="#1a1a1a"
-        style={{ userSelect: "none", pointerEvents: "none" }}
       >
         {number}
       </text>

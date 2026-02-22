@@ -6,6 +6,10 @@
  *   brand       – shown in the Brand dropdown
  *   model       – shown in the Model dropdown
  *   finish      – 'satin' | 'gloss' | 'high-gloss'  (controls SVG specular intensity)
+ *   numberRing: "none",        // "none" | "circle" | "octagon"
+ *   numberRingColor: "#000000", // almost always black
+ *   fontStyle: "black",         // "black" | "bold" | "regular"
+ *   fontFamily: "Arial Black",  // per-brand override
  *   stripeWidth – half-height of the stripe as a fraction of ball radius (0 → 1)
  *   balls       – map of ball-number → { color, stripe }
  *
@@ -21,13 +25,16 @@ const makeBalls = (colors) =>
       { color, stripe: Number(num) >= 9 },
     ])
   );
-
 export const ballSets = {
   // ── Generic ────────────────────────────────────────────────────────────
   generic_standard: {
     brand: "Generic",
     model: "Standard",
     finish: "satin",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.44,
     balls: makeBalls({
       1: "#FFD700",
@@ -48,6 +55,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Crown Standard",
     finish: "gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.43,
     balls: makeBalls({
       1: "#F5C018",
@@ -67,6 +78,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Super Pro",
     finish: "gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.43,
     balls: makeBalls({
       1: "#F4B41A",
@@ -86,6 +101,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Premier",
     finish: "high-gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
       1: "#F5C500",
@@ -105,6 +124,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Tournament",
     finish: "high-gloss",
+    numberRing: "circle",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
       1: "#FFB300",
@@ -125,6 +148,10 @@ export const ballSets = {
     brand: "Cyclop",
     model: "Galaxy",
     finish: "high-gloss",
+    numberRing: "octagon",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
       1: "#F8C200",
@@ -144,6 +171,10 @@ export const ballSets = {
     brand: "Cyclop",
     model: "Halcyon",
     finish: "high-gloss",
+    numberRing: "octagon",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.41,
     balls: makeBalls({
       1: "#FFCA00",
