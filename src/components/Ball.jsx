@@ -100,10 +100,10 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
 
         {/* 5. Number ring background shape */}
         {numberRing === "circle" && (
-          <circle cx={R} cy={R} r={R * 0.42} fill={numberRingColor} />
+          <circle cx={R} cy={R} r={R * 0.45} fill={numberRingColor} />
         )}
         {numberRing === "octagon" && (
-          <polygon points={octagonPoints(R, R, R * 0.42)} fill={numberRingColor} />
+          <polygon points={octagonPoints(R, R, R * 0.45)} fill={numberRingColor} />
         )}
 
         {/* 6. White disc sits on top of the ring */}
