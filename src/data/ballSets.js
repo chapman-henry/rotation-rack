@@ -6,6 +6,10 @@
  *   brand       – shown in the Brand dropdown
  *   model       – shown in the Model dropdown
  *   finish      – 'satin' | 'gloss' | 'high-gloss'  (controls SVG specular intensity)
+ *   numberRing: "none",        // "none" | "circle" | "octagon"
+ *   numberRingColor: "#000000", // almost always black
+ *   fontStyle: "black",         // "black" | "bold" | "regular"
+ *   fontFamily: "Arial Black",  // per-brand override
  *   stripeWidth – half-height of the stripe as a fraction of ball radius (0 → 1)
  *   balls       – map of ball-number → { color, stripe }
  *
@@ -21,13 +25,16 @@ const makeBalls = (colors) =>
       { color, stripe: Number(num) >= 9 },
     ])
   );
-
 export const ballSets = {
   // ── Generic ────────────────────────────────────────────────────────────
   generic_standard: {
     brand: "Generic",
     model: "Standard",
     finish: "satin",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.44,
     balls: makeBalls({
       1: "#FFD700",
@@ -48,6 +55,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Crown Standard",
     finish: "gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.43,
     balls: makeBalls({
       1: "#F5C018",
@@ -67,6 +78,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Super Pro",
     finish: "gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.43,
     balls: makeBalls({
       1: "#F4B41A",
@@ -86,6 +101,10 @@ export const ballSets = {
     brand: "Aramith",
     model: "Premier",
     finish: "high-gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
       1: "#F5C500",
@@ -105,57 +124,92 @@ export const ballSets = {
     brand: "Aramith",
     model: "Tournament",
     finish: "high-gloss",
+    numberRing: "circle",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
-      1: "#FFB300",
-      2: "#122CA0",
-      3: "#BE1111",
-      4: "#5E1E9C",
-      5: "#DC4E00",
-      6: "#076830",
-      7: "#620F0F",
-      8: "#0A0A0A",
-      9: "#FFB300",
-      10: "#122CA0",
+      1: "#f59004",
+      2: "#16486d",
+      3: "#e20413",
+      4: "#ff6266",
+      5: "#f83f07",
+      6: "#056741",
+      7: "#9b360a",
+      8: "#0e0e0e",
+      9: "#f59004",
+      10: "#16486d",
     }),
   },
 
   // ── Cyclop ─────────────────────────────────────────────────────────────
-  cyclop_galaxy: {
+  cyclop_zeus: {
     brand: "Cyclop",
-    model: "Galaxy",
+    model: "Zeus",
     finish: "high-gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.42,
     balls: makeBalls({
-      1: "#F8C200",
-      2: "#1228A5",
-      3: "#CC1515",
-      4: "#6820A8",
-      5: "#DE5000",
-      6: "#0B7835",
-      7: "#6E1515",
-      8: "#111111",
-      9: "#F8C200",
-      10: "#1228A5",
+      1: "#f19321",
+      2: "#124771",
+      3: "#e92634",
+      4: "#5d3e5d",
+      5: "#f74931",
+      6: "#a2bd0e",
+      7: "#5fae9b",
+      8: "#08090d",
+      9: "#f19321",
+      10: "#124771",
     }),
   },
 
-  cyclop_halcyon: {
+  cyclop_athena: {
     brand: "Cyclop",
-    model: "Halcyon",
+    model: "Athena",
     finish: "high-gloss",
+    numberRing: "none",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
+    stripeWidth: 0.42,
+    balls: makeBalls({
+      1: "#ffc803",
+      2: "#2d44ac",
+      3: "#cf2f49",
+      4: "#fe7f94",
+      5: "#ff6738",
+      6: "#2e5c51",
+      7: "#93523c",
+      8: "#08090d",
+      9: "#ffc803",
+      10: "#2d44ac",
+    }),
+  },
+
+  cyclop_hyperion: {
+    brand: "Cyclop",
+    model: "Hyperion",
+    finish: "high-gloss",
+    numberRing: "octagon",
+    numerRingColor: "#000000",
+    fontStyle: "black",
+    fontFamily: "Arial Black",
     stripeWidth: 0.41,
     balls: makeBalls({
-      1: "#FFCA00",
-      2: "#0E2299",
-      3: "#D01010",
-      4: "#611CA0",
-      5: "#D84A00",
-      6: "#087030",
-      7: "#681010",
-      8: "#0D0D0D",
-      9: "#FFCA00",
-      10: "#0E2299",
+      1: "#fdb330",
+      2: "#0a49b4",
+      3: "#e81422",
+      4: "#7b3283",
+      5: "#fc4420",
+      6: "#b4b732",
+      7: "#6accdf",
+      8: "#020002",
+      9: "#fdb330",
+      10: "#0a49b4",
     }),
   },
 };

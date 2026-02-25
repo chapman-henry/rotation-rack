@@ -10,7 +10,7 @@ import Ball from "./Ball";
  *   ballSet  – full set object from ballSets.js (balls, finish, stripeWidth)
  */
 export default function Rack({ rack, gameMode, ballSet }) {
-  const { balls, finish = "gloss", stripeWidth = 0.43 } = ballSet;
+  const { balls, finish, stripeWidth, numberRing = "none", numberRingColor = "#000000", fontFamily = '"Arial Black", Arial, sans-serif', fontWeight = "bold" } = ballSet;
 
   const ballSize = 56;
   const R = ballSize / 2;
@@ -60,6 +60,10 @@ export default function Rack({ rack, gameMode, ballSet }) {
               ballData={balls[num]}
               finish={finish}
               stripeWidth={stripeWidth}
+              numberRing={numberRing}
+              numberRingColor={numberRingColor}
+              fontFamily={fontFamily}
+              fontWeight={fontWeight}
             />
           </div>
         ) : null
