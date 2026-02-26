@@ -1,17 +1,26 @@
 /**
  * SVG-based pool ball renderer.
  *
- * Renders a realistic-looking pool ball using:
- *   - Sphere shading: radial gradient anchored upper-left to dark lower-right
- *   - Specular highlight: bright oval near the apex
- *   - Stripe: horizontal band for balls 9-15 (white base + color band)
- *   - Number circle: white disk at centre with ball number
- *
- * The `finish` prop controls specular intensity:
- *   'satin'      → soft, low-gloss look (typical house balls)
- *   'gloss'      → standard Belgian billiard ball look
- *   'high-gloss' → tournament ball look — intense highlight & deep shadows
+ * Fixes vs previous version:
+ *   1. useId() for all SVG IDs — prevents gradient/clip collisions on mobile Chrome
+ *   2. gradientUnits="userSpaceOnUse" with correctly converted absolute px coords.
+ *      Conversion rule: objectBoundingBox percentage → multiply by diameter (56),
+ *      NOT radius. Previous version accidentally multiplied by radius, halving all
+ *      gradient coordinates and producing dark, muddy ball colors.
  */
+
+import { useId } from "react";
+
+const SIZE = 56;   // diameter
+const R = SIZE / 2; // radius = 28
+
+// Spec gradient radii: objectBoundingBox "27%" = 27% of 56 = 15.12px = R * 0.54
+const FINISH = {
+  "high-gloss": { specPeak: 0.90, specR: R * 0.54, rimDark: 0.58, ambient: 0.16 },
+  gloss:        { specPeak: 0.74, specR: R * 0.60, rimDark: 0.46, ambient: 0.21 },
+  satin:        { specPeak: 0.46, specR: R * 0.68, rimDark: 0.30, ambient: 0.28 },
+};
+
 function octagonPoints(cx, cy, r) {
   return Array.from({ length: 8 }, (_, i) => {
     const angle = (Math.PI / 4) * i - Math.PI / 8;
@@ -19,23 +28,35 @@ function octagonPoints(cx, cy, r) {
   }).join(" ");
 }
 
-const SIZE = 56;
-const R = SIZE / 2; // 28 px
-
-const FINISH = {
-  "high-gloss": { specPeak: 0.90, specR: "27%", rimDark: 0.58, ambient: 0.16 },
-  gloss:        { specPeak: 0.74, specR: "30%", rimDark: 0.46, ambient: 0.21 },
-  satin:        { specPeak: 0.46, specR: "34%", rimDark: 0.30, ambient: 0.28 },
-};
-
-export default function Ball({ number, ballData, finish, stripeWidth, numberRing, numberRingColor, fontFamily, fontWeight }) {
+export default function Ball({
+  number,
+  ballData,
+  finish = "gloss",
+  stripeWidth = 0.43,
+  numberRing = "none",
+  numberRingColor = "#000000",
+  fontFamily = '"Arial Black", "Arial Bold", Arial, sans-serif',
+  fontWeight = "bold",
+}) {
+  const uid = useId();
   const { color, stripe } = ballData;
 
   const fp = FINISH[finish] ?? FINISH.gloss;
-  const stripeHalf = R * stripeWidth; // px each side of the equator
+  const stripeHalf = R * stripeWidth;
 
-  // Unique gradient/clip IDs per ball number (numbers are unique in a rack)
-  const uid = `b${number}`;
+  // Shade gradient focal point:
+  //   objectBoundingBox cx="37%" cy="31%" → userSpaceOnUse cx = 37%*56, cy = 31%*56
+  const gx = SIZE * 0.37; // 20.72px
+  const gy = SIZE * 0.31; // 17.36px
+
+  // Shade gradient radius:
+  //   objectBoundingBox r="88%" → userSpaceOnUse r = 88%*56 = 49.28px = R*1.76
+  const shadeR = R * 1.76;
+
+  // Spec gradient focal point:
+  //   objectBoundingBox cx="32%" cy="26%" → 32%*56, 26%*56
+  const sx = SIZE * 0.32; // 17.92px
+  const sy = SIZE * 0.26; // 14.56px
 
   return (
     <svg
@@ -46,29 +67,27 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
       style={{ display: "block", filter: "drop-shadow(0 3px 7px rgba(0,0,0,0.5))" }}
     >
       <defs>
-        {/* ── Clip to circle ────────────────────────────────────────────── */}
-        <clipPath id={`clip-${uid}`}>
+        {/* ── Clip to circle ────────────────────────────────────────── */}
+        <clipPath id={`${uid}-clip`}>
           <circle cx={R} cy={R} r={R} />
         </clipPath>
 
-        {/* ── Sphere shading ────────────────────────────────────────────── */}
-        {/*   Centre of gradient is upper-left; edges fade to black         */}
+        {/* ── Sphere shading gradient ───────────────────────────────── */}
         <radialGradient
-          id={`shade-${uid}`}
-          cx="37%" cy="31%" r="88%"
-          gradientUnits="objectBoundingBox"
+          id={`${uid}-shade`}
+          cx={gx} cy={gy} r={shadeR}
+          gradientUnits="userSpaceOnUse"
         >
           <stop offset="0%"   stopColor="white" stopOpacity={fp.ambient} />
           <stop offset="44%"  stopColor="black" stopOpacity="0"          />
           <stop offset="100%" stopColor="black" stopOpacity={fp.rimDark} />
         </radialGradient>
 
-        {/* ── Specular highlight ────────────────────────────────────────── */}
-        {/*   Tight bright oval at the apex (upper-left ~1/3 of the ball)   */}
+        {/* ── Specular highlight gradient ───────────────────────────── */}
         <radialGradient
-          id={`spec-${uid}`}
-          cx="32%" cy="26%" r={fp.specR}
-          gradientUnits="objectBoundingBox"
+          id={`${uid}-spec`}
+          cx={sx} cy={sy} r={fp.specR}
+          gradientUnits="userSpaceOnUse"
         >
           <stop offset="0%"   stopColor="white" stopOpacity={fp.specPeak} />
           <stop offset="55%"  stopColor="white" stopOpacity="0.07"        />
@@ -76,8 +95,8 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
         </radialGradient>
       </defs>
 
-      {/* ── All ball-surface art is clipped to a circle ──────────────── */}
-      <g clipPath={`url(#clip-${uid})`}>
+      {/* ── All surface art clipped to circle ────────────────────────── */}
+      <g clipPath={`url(#${uid}-clip)`}>
         {/* 1. Base fill */}
         <circle cx={R} cy={R} r={R} fill={stripe ? "#FDFAF0" : color} />
 
@@ -92,13 +111,13 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
           />
         )}
 
-        {/* 3. Sphere shading — makes the flat circle look 3-D */}
-        <circle cx={R} cy={R} r={R} fill={`url(#shade-${uid})`} />
+        {/* 3. Sphere shading */}
+        <circle cx={R} cy={R} r={R} fill={`url(#${uid}-shade)`} />
 
         {/* 4. Specular highlight */}
-        <circle cx={R} cy={R} r={R} fill={`url(#spec-${uid})`} />
+        <circle cx={R} cy={R} r={R} fill={`url(#${uid}-spec)`} />
 
-        {/* 5. Number ring background shape */}
+        {/* 5. Number ring (circle or octagon) */}
         {numberRing === "circle" && (
           <circle cx={R} cy={R} r={R * 0.45} fill={numberRingColor} />
         )}
@@ -106,11 +125,11 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
           <polygon points={octagonPoints(R, R, R * 0.45)} fill={numberRingColor} />
         )}
 
-        {/* 6. White disc sits on top of the ring */}
+        {/* 6. White number disc */}
         <circle cx={R} cy={R} r={R * 0.365} fill="white" opacity="0.95" />
       </g>
 
-      {/* ── Thin outline to separate ball from background ────────────── */}
+      {/* ── Outline ──────────────────────────────────────────────────── */}
       <circle
         cx={R} cy={R} r={R - 0.75}
         fill="none"
@@ -118,16 +137,17 @@ export default function Ball({ number, ballData, finish, stripeWidth, numberRing
         strokeWidth="1.5"
       />
 
-      {/* ── Number text (rendered above clip group) ──────────────────── */}
+      {/* ── Number text ──────────────────────────────────────────────── */}
       <text
         x={R}
         y={R}
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={number >= 10 ? "10" : "12"}
-        fontWeight={fontWeight}       // was hardcoded "bold"
-        fontFamily={fontFamily}       // was hardcoded "Arial Black, ..."
+        fontWeight={fontWeight}
+        fontFamily={fontFamily}
         fill="#1a1a1a"
+        style={{ userSelect: "none", pointerEvents: "none" }}
       >
         {number}
       </text>
